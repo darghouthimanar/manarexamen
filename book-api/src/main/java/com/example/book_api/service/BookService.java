@@ -1,17 +1,9 @@
-package com.example.bookapi.service;
+import org.springframework.cache.annotation.EnableCaching;
 
-import com.example.bookapi.model.Book;
-import java.util.List;
-
-public interface BookService {
-
-    List<Book> getAllBooks();
-
-    Book getBookByIsbn(String isbn);
-
-    Book createBook(Book book);
-
-    Book updateBook(String isbn, Book book);
-
-    void deleteBook(String isbn);
+@SpringBootApplication
+@EnableCaching
+public class BookService {
+    public static void main(String[] args) {
+        SpringApplication.run(BookService.class, args);
+    }
 }

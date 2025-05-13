@@ -10,3 +10,12 @@ public class BookApiApplication {
 		SpringApplication.run(BookApiApplication.class, args);
 	}
 }
+@SpringBootApplication
+@EnableCaching
+public class BookApplication {
+	public static void main(String[] args) {
+		SpringApplication.run(BookApplication.class, args);
+	}
+}
+
+

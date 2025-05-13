@@ -1,7 +1,7 @@
-package com.example.bookapi.service;
+package com.example.book_api.service;
 
-import com.example.bookapi.model.Book;
-import com.example.bookapi.repository.BookRepository;
+import com.example.book_api.model.Book;
+import com.example.book_api.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,31 +15,37 @@ public class BookServiceImpl implements BookService {
     private BookRepository bookRepository;
 
     @Override
+    @Cacheable(value = "books")
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
 
     @Override
+    @Cacheable(value = "book", key = "#isbn")
     public Book getBookByIsbn(String isbn) {
-        Optional<Book> book = bookRepository.findById(isbn);
-        return book.orElse(null); // Return null if book not found
+        return bookRepository.findById(isbn).orElse(null);
     }
 
     @Override
-    public Book createBook(Book book) {
+    @CachePut(value = "book", key = "#book.isbn")
+    @CacheEvict(value = "books", allEntries = true)
+    public Book saveBook(Book book) {
         return bookRepository.save(book);
     }
 
     @Override
-    public Book updateBook(String isbn, Book book) {
-        if (bookRepository.existsById(isbn)) {
-            book.setIsbn(isbn); // Ensure the ISBN stays the same for updates
-            return bookRepository.save(book);
-        }
-        return null; // Return null if the book with the given ISBN does not exist
+    @CachePut(value = "book", key = "#isbn")
+    @CacheEvict(value = "books", allEntries = true)
+    public Book updateBook(String isbn, Book updatedBook) {
+        updatedBook.setIsbn(isbn);
+        return bookRepository.save(updatedBook);
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "book", key = "#isbn"),
+            @CacheEvict(value = "books", allEntries = true)
+    })
     public void deleteBook(String isbn) {
         bookRepository.deleteById(isbn);
     }
